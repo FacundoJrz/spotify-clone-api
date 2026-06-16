@@ -1,4 +1,4 @@
-namespace SpotifyClone.API.models;
+namespace SpotifyClone.API.Models;
 
 public class Usuario
 {
