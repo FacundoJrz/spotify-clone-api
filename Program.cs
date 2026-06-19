@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Scalar.AspNetCore;
 using SpotifyClone.API.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 //inyeccion del applicationDbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+// Inyección del soporte para Controllers
+builder.Services.AddControllers();
 
 
 // Add services to the container.
@@ -19,10 +22,12 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+    app.MapScalarApiReference(); // Linea para mapear con Scalar (librería para los endpoints)
 }
 
 app.UseHttpsRedirection();
 
 
-
+// Activar el mapeo de los controladores
+app.MapControllers();
 app.Run();
