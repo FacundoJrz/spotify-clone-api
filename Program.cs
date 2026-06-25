@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
 using SpotifyClone.API.Data;
+using SpotifyClone.API.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
 //cadena de conexión en appsettings.json
@@ -10,7 +12,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 // Inyección del soporte para Controllers
 builder.Services.AddControllers();
-
+builder.Services.AddHttpClient<ISpotifyService, SpotifyService>();
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

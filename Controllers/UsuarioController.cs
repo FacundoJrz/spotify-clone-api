@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using SpotifyClone.API.Data;
 using SpotifyClone.API.Models;
 using SpotifyClone.API.DTOs;
-using System.Runtime.CompilerServices;
+
 
 namespace SpotifyClone.API.Controllers
 {
@@ -44,7 +44,7 @@ namespace SpotifyClone.API.Controllers
             _context.Usuarios.Add(usuario);
 
             await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUsuarios), new{id=usuario.Id}, usuario);
+            return CreatedAtAction(nameof(GetUsuario), new{id=usuario.Id}, usuario);
         }
         [HttpPut("{id}")]
         public async Task<ActionResult<Usuario>> UpdateUsuario (UsuarioRequestDto usuarioRequest, int id)
