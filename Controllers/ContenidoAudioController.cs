@@ -1,9 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using SpotifyClone.API.Models;
+using Microsoft.AspNetCore.Mvc.Routing;
 using SpotifyClone.API.Services;
-using System;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
+
 
 namespace SpotifyClone.API.Controllers
 {
@@ -39,6 +37,61 @@ namespace SpotifyClone.API.Controllers
             } 
         }
 
+          /// <summary>
+        /// Endpoint para obtener detalles de cancion
+        /// Ruta: GET api/contenidoaudio/cancion/{id}
+        /// </summary>
+        
+        [HttpGet("cancion/{id}")]
+
+        public async Task<IActionResult> ObtenerCancionPorIdAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return BadRequest("El ID de la cancíón es obligatorio");
+            }
+            try
+            {
+                var resultado = await _spotifyService.ObtenerCancionPorIdAsync(id);
+                if(resultado == null)
+                {
+                    return NotFound($"No se encontro la canción con el ID: {id}");
+                } 
+                return Ok(resultado);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"Error al conectar con el servidor: {ex.Message}");
+            }
+        }
+
+        ///<summary>
+        /// Endpoint para obtener el detalle de un podcast
+        /// Ruta: GET api/contenidoaudio/podcast/{id}
+        /// </summary>
+        
+        [HttpGet("podcast/{id}")]
+
+        public async Task<IActionResult> ObtenerPodcastPorIdAsync(string id)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                return BadRequest("El ID del Podcast es obligatorio");
+            } 
+            try{
+            var resultado = await _spotifyService.ObtenerPodcastPorIdAsync(id); 
+            if(resultado == null)
+                {
+                    return NotFound($"No se encontró el podcast con el ID: {id}");
+                }
+            return Ok(resultado);
+            }
+            catch(Exception ex)
+            {
+                return StatusCode(500, $"No se pudo conectar con el servidor: {ex.Message}");
+            }
+            
+        }
     }
 
 }

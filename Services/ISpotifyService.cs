@@ -1,10 +1,12 @@
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SpotifyClone.API.DTOs;
 
 namespace SpotifyClone.API.Services
 {
     public interface ISpotifyService
     {
-        Task<IEnumerable<object>> BuscarContenidoAsync(string query);
+        Task<IEnumerable<ContenidoAudioDto>> BuscarContenidoAsync(string query);
+        Task<CancionDetalleDto?> ObtenerCancionPorIdAsync(string id);
+        Task<PodcastDetalleDto?> ObtenerPodcastPorIdAsync(string id);
+
     }
 }

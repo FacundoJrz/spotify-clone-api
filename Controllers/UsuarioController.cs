@@ -3,78 +3,64 @@ using Microsoft.EntityFrameworkCore;
 using SpotifyClone.API.Data;
 using SpotifyClone.API.Models;
 using SpotifyClone.API.DTOs;
+using SpotifyClone.API.Services;
 
 
-namespace SpotifyClone.API.Controllers
-{
+namespace SpotifyClone.API.Controllers;
+
     [ApiController]
     [Route("api/[controller]")] //setea la ruta para que este controller sea de usuario "api/usuario"
     public class UsuarioController : ControllerBase
     {
-        private readonly ApplicationDbContext _context;
-        public UsuarioController(ApplicationDbContext context)
+        private readonly IUsuarioService _usuarioService;
+
+        public UsuarioController(IUsuarioService usuarioService)
         {
-            _context = context;
+            _usuarioService = usuarioService;
         }
+
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        public async Task<IActionResult> GetUsuarios()
         {
-            var usuarios = await _context.Usuarios.ToListAsync();
+            var usuarios = await _usuarioService.ObtenerTodosAsync();
             return Ok(usuarios);
         }
-        [HttpGet("ById/{id}")]
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetUsuario(int id)
             
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
+            var usuario = await _usuarioService.ObtenerPorIdAsync(id);
+            if(usuario == null) return NotFound("El usuario solicitado no existe");
             return Ok(usuario);
         }
         [HttpPost]
-        public async Task<ActionResult<Usuario>> PostUsuario(UsuarioRequestDto usuarioRequest)
-        {   if (string.IsNullOrWhiteSpace(usuarioRequest.Nombre) || string.IsNullOrWhiteSpace(usuarioRequest.Email))
+        public async Task<IActionResult> PostUsuario([FromBody] UsuarioRequestDto usuarioRequest)
+        {
+            try
             {
-                throw new Exception("Los campos son obligatorios");
+                var resultado = await _usuarioService.CrearAsync(usuarioRequest);
+                return CreatedAtAction(nameof(GetUsuario), new {id = resultado.Id}, resultado);
             }
-            var usuario = new Usuario ()
+            catch(ArgumentException ex)
             {
-            GoogleId = "HolaPapá22",
-            Nombre = usuarioRequest.Nombre,
-            Email = usuarioRequest.Email,
-            };
-            _context.Usuarios.Add(usuario);
-
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetUsuario), new{id=usuario.Id}, usuario);
+                return BadRequest(ex.Message);
+            }
         }
         [HttpPut("{id}")]
-        public async Task<ActionResult<Usuario>> UpdateUsuario (UsuarioRequestDto usuarioRequest, int id)
+        public async Task<IActionResult> UpdateUsuario (int id, [FromBody] UsuarioRequestDto usuarioRequest)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                throw new Exception("No se encontró el Usuario");
-            }
-
-            if (!string.IsNullOrWhiteSpace(usuarioRequest.Nombre)) usuario.Nombre = usuarioRequest.Nombre;
-            if (!string.IsNullOrWhiteSpace(usuarioRequest.Email))  usuario.Email = usuarioRequest.Email;
-
-            
-            await _context.SaveChangesAsync();
+            var exito = await _usuarioService.ActualizarAsync(id, usuarioRequest);
+            if (!exito) return NotFound("No se encontró el usuario solicitado");
             return NoContent();
+            
         }
     [HttpDelete]
-    public async Task<ActionResult> DeleteUsuario([FromQuery] int id)
+    public async Task<IActionResult> DeleteUsuario(int id)
         {
-            var usuario = await _context.Usuarios.FindAsync(id);
-            if (usuario == null)
-            {
-                throw new Exception("El usuario ingresado no está registrado");
-            }
-
-            _context.Usuarios.Remove(usuario);
-
-            await _context.SaveChangesAsync();
-            return NoContent();//Setear mensaje de eliminación correcta en el Front
+            var exito = await _usuarioService.EliminarAsync(id);
+            if(!exito) return NotFound("No se encontró el usuario solicitado");
+            return NoContent();
+            
         }
-}
 }
