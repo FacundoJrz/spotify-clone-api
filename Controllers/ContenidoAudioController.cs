@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using SpotifyClone.API.Services;
@@ -5,6 +6,7 @@ using SpotifyClone.API.Services;
 
 namespace SpotifyClone.API.Controllers
 {
+    [Authorize]
     [ApiController]
     [Route("api/[controller]")]
     public class ContenidoAudioController : ControllerBase

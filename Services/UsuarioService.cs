@@ -52,7 +52,7 @@ public class UsuarioService : IUsuarioService
         {
             Nombre = dto.Nombre,
             Email = dto.Email,
-            GoogleId = "HolaPapá22"
+            GoogleId = dto.GoogleId
         };
         _context.Usuarios.Add(NuevoUsuario);
         await _context.SaveChangesAsync();

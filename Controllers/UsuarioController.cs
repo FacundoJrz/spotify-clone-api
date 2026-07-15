@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SpotifyClone.API.Data;
@@ -19,6 +20,7 @@ namespace SpotifyClone.API.Controllers;
             _usuarioService = usuarioService;
         }
 
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetUsuarios()
         {
@@ -26,6 +28,7 @@ namespace SpotifyClone.API.Controllers;
             return Ok(usuarios);
         }
 
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUsuario(int id)
             
@@ -34,6 +37,7 @@ namespace SpotifyClone.API.Controllers;
             if(usuario == null) return NotFound("El usuario solicitado no existe");
             return Ok(usuario);
         }
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> PostUsuario([FromBody] UsuarioRequestDto usuarioRequest)
         {
@@ -47,6 +51,7 @@ namespace SpotifyClone.API.Controllers;
                 return BadRequest(ex.Message);
             }
         }
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUsuario (int id, [FromBody] UsuarioRequestDto usuarioRequest)
         {
@@ -55,6 +60,7 @@ namespace SpotifyClone.API.Controllers;
             return NoContent();
             
         }
+    [Authorize]
     [HttpDelete]
     public async Task<IActionResult> DeleteUsuario(int id)
         {

@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SpotifyClone.API.DTOs;
 using SpotifyClone.API.Services;
 
 namespace SpotifyClone.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 
