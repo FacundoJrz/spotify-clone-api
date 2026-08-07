@@ -21,9 +21,20 @@ builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+//inyeccion del servicio de CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173",
+                            "https://localhost:5173")
+
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
 //Extraer las variables de entorno de Jwt
-var jwtKey = builder.Configuration["Authentication:Jwt:Key"] 
-    ?? throw new InvalidOperationException("La clave secreta de JWT no está configurada.");
+var jwtKey = builder.Configuration["Authentication:Jwt:Key"];
 var jwtIssuer = builder.Configuration["Authentication:Jwt:Issuer"];
 var jwtAudience = builder.Configuration["Authentication:Jwt:Audience"];
 
@@ -35,18 +46,32 @@ builder.Services.AddAuthentication(options =>
 })
 .AddJwtBearer(options =>
 {
+    options.Events = new JwtBearerEvents
+    {
+        OnAuthenticationFailed = context =>
+        {
+            Console.WriteLine($"❌ [JWT Fail]: {context.Exception.Message}");
+            return Task.CompletedTask;
+        },
+        OnTokenValidated = context =>
+        {
+            Console.WriteLine("✅ [JWT OK]: Token validado con éxito.");
+            return Task.CompletedTask;
+        }
+    };
+
     options.TokenValidationParameters = new TokenValidationParameters
     {
-        ValidateIssuer = true,                
-        ValidateAudience = true,             
-        ValidateLifetime = true,              
-        ValidateIssuerSigningKey = true,     
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
 
         ValidIssuer = jwtIssuer,
         ValidAudience = jwtAudience,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
-        
-        ClockSkew = TimeSpan.Zero 
+
+        ClockSkew = TimeSpan.Zero
     };
 });
 builder.Services.AddAuthorization();
@@ -67,6 +92,7 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseCors("AllowFrontend");
 
 app.UseAuthentication();
 app.UseAuthorization(); 

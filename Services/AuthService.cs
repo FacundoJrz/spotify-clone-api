@@ -24,7 +24,8 @@ public class AuthService : IAuthService
 
     public async Task<AuthResponseDto> LoginWithGoogleAsync(GoogleLoginDto dto)
     {
-        var googleClientId = _configuration["Authentication:Google:ClientId"];    
+
+        var googleClientId = _configuration["Authentication:Google:ClientId"];
         var validationSettings = new GoogleJsonWebSignature.ValidationSettings
         {
             Audience = new[] {googleClientId} 
@@ -91,7 +92,7 @@ public class AuthService : IAuthService
 
         var token = new SecurityTokenDescriptor
         {
-            Subject = new ClaimsIdentity(claims),   
+            Subject = new ClaimsIdentity(claims),
             Expires = DateTime.UtcNow.AddDays(1),
             Issuer = issuer,
             Audience = audience,

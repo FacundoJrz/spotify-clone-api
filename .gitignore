@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 
 # Ignorar las credenciales locales de desarrollo de Spotify
 **/Properties/launchSettings.json
+appsettings.json

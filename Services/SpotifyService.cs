@@ -19,10 +19,10 @@ public class SpotifyService : ISpotifyService
     {
         _httpClient = httpClient;
 
-        _clientId = configuration["Spotify:ClientID"]
+        _clientId = configuration["Authentication:Spotify:ClientID"]
         ?? throw new ArgumentNullException("Falta configurar ClientID");
 
-        _clientSecret = configuration["Spotify:ClientSecret"]
+        _clientSecret = configuration["Authentication:Spotify:ClientSecret"]
         ?? throw new ArgumentNullException("Falta configurar el ClientSecret");
     }
 
@@ -85,7 +85,7 @@ public class SpotifyService : ISpotifyService
                 string nombre = track.TryGetProperty("name", out var nameProp) ? nameProp.GetString()?? "Sin titulo": "sin titulo";
                 
                 string creador = "Artista desconocido";
-                if(track.TryGetProperty("artist", out var artistProp) && artistProp.GetArrayLength() > 0)
+                if(track.TryGetProperty("artists", out var artistProp) && artistProp.GetArrayLength() > 0)
                 {
                     var primerArtista = artistProp[0];
                     creador = primerArtista.TryGetProperty("name", out var artistNameProp) ? artistNameProp.GetString() ?? "Artista desconocido" : "Artista desconocido"; 

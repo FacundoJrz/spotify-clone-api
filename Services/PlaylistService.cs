@@ -13,7 +13,34 @@ public class PlaylistService : IPlaylistService
     public PlaylistService(ApplicationDbContext context)
     {
         _context = context;
-    } 
+    }
+
+    public async Task<List<PlaylistDto>> ObtenerPlaylistsUsuarioAsync(int usuarioId)
+    {
+        var playlists = await _context.Playlists
+        .Where(p => p.UsuarioId == usuarioId)
+        .Include(p => p.Contenidos)
+        .ToListAsync();
+
+        if (playlists == null || playlists.Count == 0) return new List<PlaylistDto>();
+
+        var dtos = new List<PlaylistDto>();
+
+        foreach (var playlist in playlists)
+        {
+            var dto = new PlaylistDto
+            {
+                Id = playlist.Id,
+                NombrePlaylist = playlist.Nombre,
+                Descripcion = playlist.Descripcion,
+                FechaCreacion = playlist.FechaCreacion,
+                Elementos = new List<ContenidoAudioDto>()
+            };
+            dtos.Add(dto);
+        }
+
+        return dtos;
+    }
 
     public async Task<PlaylistDto?> ObtenerPorIdAsync(int id)
     {
@@ -73,5 +100,17 @@ public class PlaylistService : IPlaylistService
         return filasAfectadas > 0; 
 
         
+    }
+
+    public async Task<bool> EliminarPlaylistAsync(int playlistId) {
+        var playlist = await _context.Playlists.FindAsync(playlistId);
+        if (playlist == null) return false;
+
+        _context.Playlists.Remove(playlist);
+
+        var filasAfectadas = await _context.SaveChangesAsync();
+
+        return filasAfectadas > 0;
+            
     }
 }

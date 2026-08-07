@@ -20,7 +20,7 @@ namespace SpotifyClone.API.Controllers;
             _usuarioService = usuarioService;
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         public async Task<IActionResult> GetUsuarios()
         {
