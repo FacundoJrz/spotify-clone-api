@@ -19,7 +19,7 @@ public class PlaylistController : ControllerBase
     {
         _playlistService = playlistService;
     }
-    [AllowAnonymous]
+    
     [HttpGet("usuario/{UsuarioId}")]
 
     public async Task<IActionResult> ObtenerPlaylistsUsuarioAsync(int usuarioId)
@@ -57,6 +57,16 @@ public class PlaylistController : ControllerBase
         } return Ok(new {mensaje = "El contenido se agregó con exito"});
 
     }
+
+    [HttpDelete("{playlistId}/contenido/{contenidoId}")]
+
+    public async Task<IActionResult> EliminarContenidoAsync(int playlistId, string contenidoId)
+    {
+        var exito = await _playlistService.EliminarContenidoAsync(playlistId, contenidoId);
+        if (!exito) return NotFound("No se encontró el contenido solicitado en la playlist");
+        return NoContent();
+    }
+
 
     [HttpDelete("{playlistId}")]
 

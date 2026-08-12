@@ -1,5 +1,6 @@
 using System.Reflection.Metadata.Ecma335;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SpotifyClone.API.Data;
 using SpotifyClone.API.DTOs;
 using SpotifyClone.API.Models;
@@ -34,7 +35,17 @@ public class PlaylistService : IPlaylistService
                 NombrePlaylist = playlist.Nombre,
                 Descripcion = playlist.Descripcion,
                 FechaCreacion = playlist.FechaCreacion,
-                Elementos = new List<ContenidoAudioDto>()
+                Elementos = playlist.Contenidos.Select( 
+                    c => new ContenidoAudioDto
+                    {
+                        Id = c.SpotifyId,
+                        Nombre = c.Nombre,
+                        Creador = c.Creador,
+                        ImagenUrl = c.ImagenUrl,
+                        DuracionMs = c.DuracionMs,
+                        Tipo = c.Tipo
+                    }
+                    ).ToList()
             };
             dtos.Add(dto);
         }
@@ -56,7 +67,15 @@ public class PlaylistService : IPlaylistService
             NombrePlaylist = playlist.Nombre,
             Descripcion = playlist.Descripcion,
             FechaCreacion = playlist.FechaCreacion,
-            Elementos = new List<ContenidoAudioDto>()            
+
+            Elementos = playlist.Contenidos.Select(c => new ContenidoAudioDto {
+                Id = c.SpotifyId,
+                Nombre = c.Nombre,
+                Creador = c.Creador,
+                ImagenUrl = c.ImagenUrl,
+                DuracionMs = c.DuracionMs,
+                Tipo = c.Tipo
+            }).ToList()
         };
         return dto;
     }
@@ -91,8 +110,12 @@ public class PlaylistService : IPlaylistService
         {
             PlaylistId = playlistId,
             SpotifyId = dto.SpotifyId,
-            Tipo = dto.Tipo
-        };
+            Tipo = dto.Tipo,
+            Nombre = dto.Nombre,
+            Creador = dto.Creador,
+            ImagenUrl = dto.ImagenUrl,
+            DuracionMs = dto.DuracionMs
+            };
 
         _context.PlaylistContenidos.Add(nuevoContenido);
         var filasAfectadas = await _context.SaveChangesAsync();
@@ -100,6 +123,19 @@ public class PlaylistService : IPlaylistService
         return filasAfectadas > 0; 
 
         
+    }
+
+    public async Task<bool> EliminarContenidoAsync(int playlistId, string contenidoId)
+    {
+        var contenido = await _context.PlaylistContenidos
+            .FirstOrDefaultAsync(c => c.SpotifyId == contenidoId && c.PlaylistId == playlistId);
+
+        if (contenido == null) return false;
+
+        _context.PlaylistContenidos.Remove(contenido);
+
+        var filasAfectadas = await _context.SaveChangesAsync();
+        return filasAfectadas > 0;
     }
 
     public async Task<bool> EliminarPlaylistAsync(int playlistId) {
