@@ -39,6 +39,7 @@ public class PlaylistController : ControllerBase
     
     [HttpGet("{playlistId}")]
 
+    [AllowAnonymous]
     public async Task<IActionResult> ObtenerPlaylist(int playlistId)
     {
         var playlist = await _playlistService.ObtenerPorIdAsync(playlistId);
@@ -58,11 +59,11 @@ public class PlaylistController : ControllerBase
 
     }
 
-    [HttpDelete("{playlistId}/contenido/{contenidoId}")]
+    [HttpDelete("{playlistId}/contenido/{Id}")]
 
-    public async Task<IActionResult> EliminarContenidoAsync(int playlistId, string contenidoId)
+    public async Task<IActionResult> EliminarContenidoAsync(int playlistId, int Id)
     {
-        var exito = await _playlistService.EliminarContenidoAsync(playlistId, contenidoId);
+        var exito = await _playlistService.EliminarContenidoAsync(playlistId, Id);
         if (!exito) return NotFound("No se encontró el contenido solicitado en la playlist");
         return NoContent();
     }

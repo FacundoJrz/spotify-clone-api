@@ -20,6 +20,7 @@ builder.Services.AddHttpClient<ISpotifyService, SpotifyService>();
 builder.Services.AddScoped<IPlaylistService, PlaylistService>();
 builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddHttpClient<ISpotifyAuthService, SpotifyAuthService>();
 
 //inyeccion del servicio de CORS
 builder.Services.AddCors(options =>
@@ -91,11 +92,12 @@ if (app.Environment.IsDevelopment())
     app.MapScalarApiReference(); // Linea para mapear con Scalar (librería para los endpoints)
 }
 
+;
+app.UseRouting();
 app.UseHttpsRedirection();
 app.UseCors("AllowFrontend");
-
 app.UseAuthentication();
-app.UseAuthorization(); 
+app.UseAuthorization();
 
 
 // Activar el mapeo de los controladores

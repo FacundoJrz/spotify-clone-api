@@ -38,7 +38,7 @@ public class PlaylistService : IPlaylistService
                 Elementos = playlist.Contenidos.Select( 
                     c => new ContenidoAudioDto
                     {
-                        Id = c.SpotifyId,
+                        Id = c.Id,
                         Nombre = c.Nombre,
                         Creador = c.Creador,
                         ImagenUrl = c.ImagenUrl,
@@ -69,12 +69,14 @@ public class PlaylistService : IPlaylistService
             FechaCreacion = playlist.FechaCreacion,
 
             Elementos = playlist.Contenidos.Select(c => new ContenidoAudioDto {
-                Id = c.SpotifyId,
+                Id = c.Id,
+                SpotifyId = c.SpotifyId,
                 Nombre = c.Nombre,
                 Creador = c.Creador,
                 ImagenUrl = c.ImagenUrl,
                 DuracionMs = c.DuracionMs,
-                Tipo = c.Tipo
+                Tipo = c.Tipo,
+                PreviewUrl = c.PreviewUrl
             }).ToList()
         };
         return dto;
@@ -109,13 +111,15 @@ public class PlaylistService : IPlaylistService
         var nuevoContenido = new PlaylistContenido
         {
             PlaylistId = playlistId,
+            Id = dto.Id,
             SpotifyId = dto.SpotifyId,
             Tipo = dto.Tipo,
             Nombre = dto.Nombre,
             Creador = dto.Creador,
             ImagenUrl = dto.ImagenUrl,
-            DuracionMs = dto.DuracionMs
-            };
+            DuracionMs = dto.DuracionMs,
+            PreviewUrl = dto.PreviewUrl
+        };
 
         _context.PlaylistContenidos.Add(nuevoContenido);
         var filasAfectadas = await _context.SaveChangesAsync();
@@ -125,10 +129,10 @@ public class PlaylistService : IPlaylistService
         
     }
 
-    public async Task<bool> EliminarContenidoAsync(int playlistId, string contenidoId)
+    public async Task<bool> EliminarContenidoAsync(int playlistId, int Id)
     {
         var contenido = await _context.PlaylistContenidos
-            .FirstOrDefaultAsync(c => c.SpotifyId == contenidoId && c.PlaylistId == playlistId);
+            .FirstOrDefaultAsync(c => c.Id == Id && c.PlaylistId == playlistId);
 
         if (contenido == null) return false;
 

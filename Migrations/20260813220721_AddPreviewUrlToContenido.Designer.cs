@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SpotifyClone.API.Data;
 
@@ -11,9 +12,11 @@ using SpotifyClone.API.Data;
 namespace SpotifyClone.API.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260813220721_AddPreviewUrlToContenido")]
+    partial class AddPreviewUrlToContenido
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -116,18 +119,6 @@ namespace SpotifyClone.API.Migrations
 
                     b.Property<string>("Nombre")
                         .IsRequired()
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("SpotifyAccessToken")
-                        .HasColumnType("longtext");
-
-                    b.Property<string>("SpotifyRefreshToken")
-                        .HasColumnType("longtext");
-
-                    b.Property<DateTime?>("SpotifyTokenExpiresAt")
-                        .HasColumnType("datetime(6)");
-
-                    b.Property<string>("SpotifyUserId")
                         .HasColumnType("longtext");
 
                     b.HasKey("Id");

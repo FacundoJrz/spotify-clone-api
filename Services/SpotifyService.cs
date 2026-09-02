@@ -2,9 +2,6 @@ using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Text;
 using SpotifyClone.API.DTOs;
-using Microsoft.AspNetCore.Mvc;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
 
 
 namespace SpotifyClone.API.Services;
@@ -81,7 +78,7 @@ public class SpotifyService : ISpotifyService
         {
             var cancionesMapeadas = tracksProp.GetProperty("items").EnumerateArray().Select(track =>
             {   
-                string id = track.TryGetProperty("id", out var idProp) ? idProp.GetString()?? string.Empty : string.Empty;
+                string spotifyId = track.TryGetProperty("id", out var idProp) ? idProp.GetString()?? string.Empty : string.Empty;
                 string nombre = track.TryGetProperty("name", out var nameProp) ? nameProp.GetString()?? "Sin titulo": "sin titulo";
                 
                 string creador = "Artista desconocido";
@@ -101,15 +98,18 @@ public class SpotifyService : ISpotifyService
                 }
 
                 int duracionMs = track.TryGetProperty("duration_ms", out var durationProp) ? durationProp.GetInt32() : 0;
-                
+                string? previewUrl = track.TryGetProperty("preview_url", out var previewProp) ? previewProp.GetString() : null;
+                string? uri = track.TryGetProperty("uri", out var uriProp) ? uriProp.GetString() : null;
                 return new ContenidoAudioDto
-                {
-                    Id = id,
+                { 
+                    SpotifyId = spotifyId,
                     Nombre = nombre,
                     Creador = creador,
                     ImagenUrl = imagenUrl,
                     DuracionMs = duracionMs,
-                    Tipo = "Cancion"
+                    Tipo = "Cancion",
+                    PreviewUrl = previewUrl,
+                    Uri = uri
 
                 };
             });
@@ -119,7 +119,7 @@ public class SpotifyService : ISpotifyService
         {
             var podcastsMapeados = showsProp.GetProperty("items").EnumerateArray().Select(show => 
             {
-                string id = show.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? string.Empty : string.Empty;
+                string spotifyId = show.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? string.Empty : string.Empty;
                 string nombre = show.TryGetProperty("name", out var nameProp) ? nameProp.GetString() ?? "Sin título" : "Sin título";
                 string creador = show.TryGetProperty("publisher", out var pubProp) ? pubProp.GetString() ?? "Creador desconocido" : "Creador desconocido";
 
@@ -133,12 +133,13 @@ public class SpotifyService : ISpotifyService
 
                 return new ContenidoAudioDto
                 {
-                    Id = id,
+                    SpotifyId = spotifyId,
                     Nombre = nombre,
                     Creador = creador,
                     ImagenUrl = imagenUrl,
                     DuracionMs = 0,
-                    Tipo = "Podcast"
+                    Tipo = "Podcast",
+                    PreviewUrl = null
                 };
             });
             resultadosUnificados.AddRange(podcastsMapeados);
@@ -170,6 +171,7 @@ public class SpotifyService : ISpotifyService
 
         string nombre = json.TryGetProperty("name", out var nameProp) ? nameProp.GetString() ?? "Sin titulo" : "Sin titulo";
         int duracionMs = json.TryGetProperty("duration_ms", out var duracionProp) ? duracionProp.GetInt32() : 0;
+        string? previewUrl = json.TryGetProperty("preview_url", out var previewProp) ? previewProp.GetString() : null;
 
         //Recorrer el array de album para obtener nombre, imagen y duración
 
@@ -180,7 +182,7 @@ public class SpotifyService : ISpotifyService
         if (json.TryGetProperty("album", out var albumProp))
         { 
             albumNombre = albumProp.TryGetProperty("name", out var albumNameProp) ? albumNameProp.GetString() ?? "Album desconocido" : "Album desconocido";
-            fechaLanzamiento = albumProp.TryGetProperty("realease_date", out var lanzamientoProp) ? lanzamientoProp.GetString() ?? "Fecha desconocida" : "Fecha desconocida";
+            fechaLanzamiento = albumProp.TryGetProperty("release_date", out var lanzamientoProp) ? lanzamientoProp.GetString() ?? "Fecha desconocida" : "Fecha desconocida";
         }
         if (albumProp.TryGetProperty("images", out var imagesProp) && imagesProp.GetArrayLength() > 0)
         {
@@ -204,7 +206,8 @@ public class SpotifyService : ISpotifyService
             Creador = creador,
             ImagenUrl = imagenUrl,
             Duracion = duracionMs,
-            FechaLanzamiento = fechaLanzamiento
+            FechaLanzamiento = fechaLanzamiento,
+            PreviewUrl = previewUrl
         };   
 
     }

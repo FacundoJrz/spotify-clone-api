@@ -10,7 +10,7 @@ public class PlaylistContenido
     public string Creador { get; set; } = string.Empty;
     public string ImagenUrl { get; set; } = string.Empty;
     public int DuracionMs { get; set; }
-
+    public string? PreviewUrl { get; set; }
 
 
     public virtual Playlist Playlist { get; set; } = null!; //propiedad de navegación

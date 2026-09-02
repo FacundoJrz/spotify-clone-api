@@ -13,4 +13,6 @@ public class CancionDetalleDto
     public int Duracion { get; set; }
     public string FechaLanzamiento { get; set; } = string.Empty;
 
+    public string? PreviewUrl { get; set; }
+
 }
