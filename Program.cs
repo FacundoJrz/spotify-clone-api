@@ -12,7 +12,10 @@ var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 //inyeccion del applicationDbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options => 
-options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+options.UseMySql(
+    builder.Configuration.GetConnectionString("DefaultConnection"),
+    ServerVersion.Parse("8.0.36-mysql")
+    ));
 // Inyección del soporte para Controllers
 builder.Services.AddControllers();
 // Inyección del soporte para Services
@@ -27,7 +30,8 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173",
+        policy.WithOrigins("https://spotify-clone-client-two.vercel.app",
+                            "http://localhost:5173",
                             "https://localhost:5173")
 
             .AllowAnyHeader()
