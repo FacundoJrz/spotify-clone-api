@@ -1,11 +1,9 @@
-﻿# 1. Etapa de ejecución (Runtime de .NET 8)
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+﻿# 1. Etapa de ejecución (Runtime de .NET 9)
+FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS base
 WORKDIR /app
-EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
 
-# 2. Etapa de compilación (SDK de .NET 8)
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+# 2. Etapa de compilación (SDK de .NET 9)
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copiar proyecto y restaurar dependencias
